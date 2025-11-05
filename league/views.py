@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from league.models import Team, Match, Player
+from league.models import Team, Match, Player, StartingEleven, Substitutes
 from league.forms import PlayerForm
 from league.match_forms import MatchForm
+from league.lineup_forms import StartingElevenForm, SubstitutesForm
 from django.core.management import call_command
 from django.contrib.auth.decorators import login_required, user_passes_test
 
@@ -103,3 +104,44 @@ def match_delete(request, pk):
         match.delete()
         return redirect('match_list')
     return render(request, 'league/match_confirm_delete.html', {'match': match})
+
+@login_required
+@user_passes_test(lambda u: u.role == 'coach')
+def manage_lineup(request, match_pk):
+    match = get_object_or_404(Match, pk=match_pk)
+    team = request.user.team
+
+    if match.home_team != team and match.away_team != team:
+        return HttpResponse("You can only manage lineups for your team's matches.", status=403)
+
+    if request.method == 'POST':
+        starting_eleven_form = StartingElevenForm(request.POST, team=team)
+        substitutes_form = SubstitutesForm(request.POST, team=team)
+
+        if starting_eleven_form.is_valid() and substitutes_form.is_valid():
+            # Clear existing lineup for this match and team
+            StartingEleven.objects.filter(match=match, player__team=team).delete()
+            Substitutes.objects.filter(match=match, player__team=team).delete()
+
+            # Save new starting eleven
+            for player in starting_eleven_form.cleaned_data['players']:
+                StartingEleven.objects.create(match=match, player=player)
+
+            # Save new substitutes
+            for player in substitutes_form.cleaned_data['players']:
+                Substitutes.objects.create(match=match, player=player)
+
+            return redirect('matchday_results', md=match.matchday)
+    else:
+        current_starting_eleven = StartingEleven.objects.filter(match=match, player__team=team).values_list('player__pk', flat=True)
+        current_substitutes = Substitutes.objects.filter(match=match, player__team=team).values_list('player__pk', flat=True)
+
+        starting_eleven_form = StartingElevenForm(initial={'players': list(current_starting_eleven)}, team=team)
+        substitutes_form = SubstitutesForm(initial={'players': list(current_substitutes)}, team=team)
+
+    return render(request, 'league/manage_lineup.html', {
+        'match': match,
+        'team': team,
+        'starting_eleven_form': starting_eleven_form,
+        'substitutes_form': substitutes_form
+    })

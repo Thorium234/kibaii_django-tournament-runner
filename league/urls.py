@@ -13,4 +13,5 @@ urlpatterns = [
     path('matches/add/', views.match_create, name='match_create'),
     path('matches/<int:pk>/edit/', views.match_update, name='match_update'),
     path('matches/<int:pk>/delete/', views.match_delete, name='match_delete'),
+    path('matches/<int:match_pk>/manage_lineup/', views.manage_lineup, name='manage_lineup'),
 ]

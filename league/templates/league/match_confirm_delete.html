@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Match{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Delete Match</h2>
+    <div class="alert alert-warning" role="alert">
+        Are you sure you want to delete the match between <strong>{{ match.home_team }}</strong> and <strong>{{ match.away_team }}</strong> on Matchday <strong>{{ match.matchday }}</strong>?
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'match_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

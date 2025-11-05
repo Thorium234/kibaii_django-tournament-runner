@@ -4,14 +4,62 @@
 
 {% block content %}
     <h1 class="mb-4">Matchday {{ matchday }} Results</h1>
-    <ul class="list-group mb-4">
+    <div class="list-group mb-4">
         {% for match in matches %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ match.home_team }}</span>
-                <span class="badge bg-primary rounded-pill">{{ match.home_score }} - {{ match.away_score }}</span>
-                <span>{{ match.away_team }}</span>
-            </li>
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ match.home_team }} vs {{ match.away_team }}</h5>
+                    <small class="text-muted">Matchday {{ match.matchday }}</small>
+                </div>
+                <p class="mb-1">Score: {{ match.home_score|default:"-" }} - {{ match.away_score|default:"-" }}</p>
+                <small class="text-muted">Venue: {{ match.venue|default:"TBD" }}</small>
+                {% if user.is_authenticated and user.role == 'coach' and (user.team == match.home_team or user.team == match.away_team) %}
+                    <a href="{% url 'manage_lineup' match.pk %}" class="btn btn-sm btn-info mt-2">Manage Lineup</a>
+                {% endif %}
+                <div class="mt-2">
+                    <h6>Starting Eleven ({{ match.home_team }}):</h6>
+                    <ul>
+                        {% for se_player in match.starting_eleven.all %}
+                            {% if se_player.player.team == match.home_team %}
+                                <li>{{ se_player.player.name }} ({{ se_player.player.position }})</li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No starting eleven selected for {{ match.home_team }}</li>
+                        {% endfor %}
+                    </ul>
+                    <h6>Substitutes ({{ match.home_team }}):</h6>
+                    <ul>
+                        {% for sub_player in match.substitutes.all %}
+                            {% if sub_player.player.team == match.home_team %}
+                                <li>{{ sub_player.player.name }} ({{ sub_player.player.position }})</li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No substitutes selected for {{ match.home_team }}</li>
+                        {% endfor %}
+                    </ul>
+                    <h6>Starting Eleven ({{ match.away_team }}):</h6>
+                    <ul>
+                        {% for se_player in match.starting_eleven.all %}
+                            {% if se_player.player.team == match.away_team %}
+                                <li>{{ se_player.player.name }} ({{ se_player.player.position }})</li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No starting eleven selected for {{ match.away_team }}</li>
+                        {% endfor %}
+                    </ul>
+                    <h6>Substitutes ({{ match.away_team }}):</h6>
+                    <ul>
+                        {% for sub_player in match.substitutes.all %}
+                            {% if sub_player.player.team == match.away_team %}
+                                <li>{{ sub_player.player.name }} ({{ sub_player.player.position }})</li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No substitutes selected for {{ match.away_team }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
     <a href="{% url 'league_table' %}" class="btn btn-secondary">Back to League Table</a>
 {% endblock %}

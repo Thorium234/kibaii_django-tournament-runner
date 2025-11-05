@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Lineup for {{ match.home_team }} vs {{ match.away_team }}{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Manage Lineup for {{ match.home_team }} vs {{ match.away_team }}</h2>
+    <div class="card">
+        <div class="card-header">
+            Select Starting Eleven and Substitutes for {{ team.name }}
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Starting Eleven (select 11 players):</label>
+                    {{ starting_eleven_form.players }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Substitutes (select up to 7 players):</label>
+                    {{ substitutes_form.players }}
+                </div>
+                <button type="submit" class="btn btn-primary">Save Lineup</button>
+                <a href="{% url 'matchday_results' match.matchday %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

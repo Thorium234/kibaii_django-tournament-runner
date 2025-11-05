@@ -6,6 +6,16 @@ from league.match_forms import MatchForm
 from league.lineup_forms import StartingElevenForm, SubstitutesForm
 from django.core.management import call_command
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import transaction
+
+def _update_team_stats(team, played_change, won_change, drawn_change, lost_change, gf_change, ga_change):
+    team.played += played_change
+    team.won += won_change
+    team.drawn += drawn_change
+    team.lost += lost_change
+    team.goals_for += gf_change
+    team.goals_against += ga_change
+    team.save()
 
 def league_table(request):
     teams = Team.objects.all().order_by('-won', '-drawn', '-goals_for') # Simple ordering
@@ -73,11 +83,36 @@ def match_list(request):
 
 @login_required
 @user_passes_test(lambda u: u.role == 'official')
+@transaction.atomic
 def match_create(request):
     if request.method == 'POST':
         form = MatchForm(request.POST)
         if form.is_valid():
-            form.save()
+            match = form.save(commit=False)
+            result = form.cleaned_data.get('result')
+
+            if result == 'home':
+                match.home_score = 1
+                match.away_score = 0
+                match.played = True
+            elif result == 'away':
+                match.home_score = 0
+                match.away_score = 1
+                match.played = True
+            elif result == 'draw':
+                match.home_score = 0
+                match.away_score = 0
+                match.played = True
+            else: # 'none' or not played
+                match.home_score = None
+                match.away_score = None
+                match.played = False
+            match.save()
+
+            if match.played:
+                _update_team_stats(match.home_team, 1, 1 if result == 'home' else 0, 1 if result == 'draw' else 0, 1 if result == 'away' else 0, match.home_score, match.away_score)
+                _update_team_stats(match.away_team, 1, 1 if result == 'away' else 0, 1 if result == 'draw' else 0, 1 if result == 'home' else 0, match.away_score, match.home_score)
+
             return redirect('match_list')
     else:
         form = MatchForm()
@@ -85,12 +120,56 @@ def match_create(request):
 
 @login_required
 @user_passes_test(lambda u: u.role == 'official')
+@transaction.atomic
 def match_update(request, pk):
     match = get_object_or_404(Match, pk=pk)
+    
+    # Store old stats for reversion
+    old_home_score = match.home_score
+    old_away_score = match.away_score
+    old_played = match.played
+
     if request.method == 'POST':
         form = MatchForm(request.POST, instance=match)
         if form.is_valid():
-            form.save()
+            match = form.save(commit=False)
+            result = form.cleaned_data.get('result')
+
+            # Revert old stats if match was played
+            if old_played:
+                if old_home_score > old_away_score: # Home won
+                    _update_team_stats(match.home_team, -1, -1, 0, 0, -old_home_score, -old_away_score)
+                    _update_team_stats(match.away_team, -1, 0, 0, -1, -old_away_score, -old_home_score)
+                elif old_home_score < old_away_score: # Away won
+                    _update_team_stats(match.home_team, -1, 0, 0, -1, -old_home_score, -old_away_score)
+                    _update_team_stats(match.away_team, -1, -1, 0, 0, -old_away_score, -old_home_score)
+                else: # Draw
+                    _update_team_stats(match.home_team, -1, 0, -1, 0, -old_home_score, -old_away_score)
+                    _update_team_stats(match.away_team, -1, 0, -1, 0, -old_away_score, -old_home_score)
+
+            # Apply new stats
+            if result == 'home':
+                match.home_score = 1
+                match.away_score = 0
+                match.played = True
+            elif result == 'away':
+                match.home_score = 0
+                match.away_score = 1
+                match.played = True
+            elif result == 'draw':
+                match.home_score = 0
+                match.away_score = 0
+                match.played = True
+            else: # 'none' or not played
+                match.home_score = None
+                match.away_score = None
+                match.played = False
+            match.save()
+
+            if match.played:
+                _update_team_stats(match.home_team, 1, 1 if result == 'home' else 0, 1 if result == 'draw' else 0, 1 if result == 'away' else 0, match.home_score, match.away_score)
+                _update_team_stats(match.away_team, 1, 1 if result == 'away' else 0, 1 if result == 'draw' else 0, 1 if result == 'home' else 0, match.away_score, match.home_score)
+
             return redirect('match_list')
     else:
         form = MatchForm(instance=match)
@@ -98,8 +177,22 @@ def match_update(request, pk):
 
 @login_required
 @user_passes_test(lambda u: u.role == 'official')
+@transaction.atomic
 def match_delete(request, pk):
     match = get_object_or_404(Match, pk=pk)
+    
+    # Revert stats if match was played
+    if match.played:
+        if match.home_score > match.away_score: # Home won
+            _update_team_stats(match.home_team, -1, -1, 0, 0, -match.home_score, -match.away_score)
+            _update_team_stats(match.away_team, -1, 0, 0, -1, -match.away_score, -match.home_score)
+        elif match.home_score < match.away_score: # Away won
+            _update_team_stats(match.home_team, -1, 0, 0, -1, -match.home_score, -match.away_score)
+            _update_team_stats(match.away_team, -1, -1, 0, 0, -match.away_score, -match.home_score)
+        else: # Draw
+            _update_team_stats(match.home_team, -1, 0, -1, 0, -match.home_score, -match.away_score)
+            _update_team_stats(match.away_team, -1, 0, -1, 0, -match.away_score, -match.home_score)
+    
     if request.method == 'POST':
         match.delete()
         return redirect('match_list')

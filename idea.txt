@@ -25,4 +25,14 @@ Requirements:
    - No user auth or frontend styling needed—just functional backend and simple HTML templates.
    - All code should follow Django best practices (e.g., F() expressions for atomic updates).
 
-Output the full directory structure suggestion and core files: models.py, views.py, urls.py, a management command (simulate_matches.py), and minimal templates.
+Output the full directory structure suggestion and core files: models.py, views.py, urls.py, a management command (simulate_matches.py), and minimal templates. the officials accounts should be activated by django admin where he registers his/her team with players and he    │
+│    can perform crud on his and only team then then on fun side he can also see the fixture of various teams or teams │
+│     of that day then he can also see the venue and the player can be transfered from one team to another now or      │
+│    coach he enters players dwetails and enters the roles and positions and we should have animations for starting    │
+│    eleven then we should then substitutes also so that when the fan clicks on the fixture for that game he can see   │
+│    the starting eleven and substitutes   add suggest wether you are fan coatch so that the ceach manages his or her own team then or officials are the     │
+│    ones to plan for the games or matches that will play an the fun sees the fixture and dates of the matches he is   │
+│    able to see the results also i should be able to perform all the crud matchs and fixtures and super user is an official not a fan          │
+│   who apdates the matches and fixtures now you know we should have seetings for the teams like a win            │
+│   got 3  points,draw 1 point so if we have a fixture of man united vs aston vilah then playing maybe on         │
+│   friday then man united wins it will get three points we should have just to select which team won then the system updates and sorts the fixture      

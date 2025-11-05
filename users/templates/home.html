@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <h1 class="display-4">Welcome to Tournament Runner!</h1>
+  <p class="lead">Your ultimate platform for managing and simulating football tournaments.</p>
+  <hr class="my-4">
+  {% if user.is_authenticated %}
+    <p>Hello, {{ user.username }}! You are logged in as a {{ user.role }}.</p>
+    <p>
+      <a class="btn btn-primary btn-lg" href="{% url 'league_table' %}" role="button">View League Table</a>
+      {% if user.role == 'coach' %}
+        <a class="btn btn-secondary btn-lg" href="{% url 'manage_team' %}" role="button">Manage Your Team</a>
+      {% endif %}
+    </p>
+  {% else %}
+    <p>Please log in or sign up to get started.</p>
+    <p>
+      <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Log In</a>
+      <a class="btn btn-success btn-lg" href="{% url 'signup' %}" role="button">Sign Up</a>
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

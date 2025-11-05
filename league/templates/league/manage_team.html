@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Team{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Manage Team: {{ team.name }}</h2>
+    <div class="card mb-4">
+        <div class="card-header">
+            Team Statistics
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Played:</strong> {{ team.played }}</li>
+            <li class="list-group-item"><strong>Won:</strong> {{ team.won }}</li>
+            <li class="list-group-item"><strong>Drawn:</strong> {{ team.drawn }}</li>
+            <li class="list-group-item"><strong>Lost:</strong> {{ team.lost }}</li>
+            <li class="list-group-item"><strong>Goals For:</strong> {{ team.goals_for }}</li>
+            <li class="list-group-item"><strong>Goals Against:</strong> {{ team.goals_against }}</li>
+            <li class="list-group-item"><strong>Goal Difference:</strong> {{ team.goal_difference }}</li>
+            <li class="list-group-item"><strong>Points:</strong> {{ team.points }}</li>
+        </ul>
+    </div>
+    <a href="{% url 'league_table' %}" class="btn btn-secondary">Back to League Table</a>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Matchday {{ matchday }} Results{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Matchday {{ matchday }} Results</h1>
+    <ul class="list-group mb-4">
+        {% for match in matches %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ match.home_team }}</span>
+                <span class="badge bg-primary rounded-pill">{{ match.home_score }} - {{ match.away_score }}</span>
+                <span>{{ match.away_team }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'league_table' %}" class="btn btn-secondary">Back to League Table</a>
+{% endblock %}

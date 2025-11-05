@@ -1,0 +1,28 @@
+Create a Django project for an English Premier League-style football tournament simulator.  
+Requirements:
+
+1. **Models**:
+   - `Team`: name (str), played (int), won (int), drawn (int), lost (int), goals_for (int), goals_against (int)
+   - `Match`: home_team (FK), away_team (FK), home_score (int), away_score (int), matchday (int), played (bool)
+
+2. **Logic**:
+   - 20 predefined teams (use real EPL team names or placeholders).
+   - Generate all 380 matches (20 teams × 19 opponents × 2 legs) across 38 matchdays.
+   - Simulate match results programmatically: use simple weighted randomness based on team strength (optional: allow strength attribute in Team model).
+   - After simulation, update team stats (points, goals, etc.) automatically.
+
+3. **Views & URLs**:
+   - `/` → show current league table (sorted by points, then goal difference, then goals for).
+   - `/matchday/<int:md>/` → show results for a specific matchday.
+   - `/simulate/` → trigger full tournament simulation (idempotent: don’t duplicate matches).
+
+4. **Admin & Migrations**:
+   - Register models in admin.py for inspection.
+   - Include basic fixtures or a management command to seed initial teams.
+
+5. **Assumptions**:
+   - Use SQLite (default Django DB).
+   - No user auth or frontend styling needed—just functional backend and simple HTML templates.
+   - All code should follow Django best practices (e.g., F() expressions for atomic updates).
+
+Output the full directory structure suggestion and core files: models.py, views.py, urls.py, a management command (simulate_matches.py), and minimal templates.

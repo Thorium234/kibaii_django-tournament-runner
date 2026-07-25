@@ -171,11 +171,6 @@ python manage.py simulate_tournament
 - Comprehensive test suite (tests.py files exist but are minimal)
 - API endpoints for third-party integrations
 
-## Try asking
-
-- **How do I simulate a full tournament season with realistic match results?**
-- **Can I transfer a player from one team to another, and how does it affect stats?**
-- **What happens if I edit a match result—does it automatically recalculate team standings?**
 
 ---
 

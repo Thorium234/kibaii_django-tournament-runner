@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
-
+ 
 def home(request):
     return render(request, 'home.html')
 
@@ -15,3 +15,6 @@ class SignUpView(CreateView):
 @login_required
 def profile(request):
     return render(request, 'registration/profile.html')
+
+def guest(request):
+	return render(request,'guest/guest.html') 

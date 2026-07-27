@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Dashboard | Tournament Runner</title>
+    <!-- Tailwind CSS for clean layout architecture -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl tracking-tight">🏆 Tournament Runner</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="bg-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">Guest View</span>
+                    <a href="{% url 'login' %}" class="bg-white text-indigo-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">
+                        Sign In / Register
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Welcome banner -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 text-center md:text-left md:flex md:items-center md:justify-between">
+            <div class="mb-6 md:mb-0">
+                <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+                    Welcome to the Tournament Board!
+                </h1>
+                <p class="text-gray-500 max-w-xl">
+                    You are currently browsing as a guest. You can view ongoing leagues, fixtures, and standing tables. To register your own team or manage tournaments, please create an account.
+                </p>
+            </div>
+            <div>
+                <a href="{% url 'register' %}" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm transition-all transform hover:-translate-y-0.5">
+                    Create a Team Account
+                </a>
+            </div>
+        </div>
+
+        <!-- Dashboard Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Active Tournaments List -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <h2 class="font-bold text-lg text-gray-900 flex items-center">
+                            <span class="mr-2">📅</span> Active Leagues & Tournaments
+                        </h2>
+                        <span class="text-xs text-gray-500 bg-white border px-2 py-1 rounded-md font-medium">Live Updates</span>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-100">
+                        <!-- Django Loop Target Placeholder -->
+                        {% for tournament in tournaments %}
+                        <div class="p-5 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-base mb-1">{{ tournament.name }}</h3>
+                                <p class="text-xs text-gray-500 flex items-center gap-2">
+                                    <span>📍 Format: {{ tournament.format }}</span>
+                                    <span>•</span>
+                                    <span>👥 {{ tournament.teams.count }} Teams Registered</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 self-start sm:self-center">
+                                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Active</span>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-900 text-sm font-semibold ml-2">View Standings &rarr;</a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="p-8 text-center text-gray-400 text-sm">No public active tournaments found at this moment.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Leaderboard Sidebar -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h2 class="font-bold text-lg text-gray-900 flex items-center">
+                            <span class="mr-2">📊</span> Top Leaders
+                        </h2>
+                    </div>
+                    <div class="p-5">
+                        <div class="relative overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-3 py-2 rounded-l-lg">Pos</th>
+                                        <th scope="col" class="px-3 py-2">Team</th>
+                                        <th scope="col" class="px-3 py-2 text-center">PTS</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="bg-white">
+                                        <th scope="row" class="px-3 py-3 font-bold text-gray-900 whitespace-nowrap">1</th>
+                                        <td class="px-3 py-3 font-semibold text-gray-900">Cyber Strikers FC</td>
+                                        <td class="px-3 py-3 text-center font-bold text-indigo-600">24</td>
+                                    </tr>
+                                    <tr class="bg-white">
+                                        <th scope="row" class="px-3 py-3 font-bold text-gray-900 whitespace-nowrap">2</th>
+                                        <td class="px-3 py-3 font-medium text-gray-700">Termux Titans</td>
+                                        <td class="px-3 py-3 text-center font-bold text-indigo-600">21</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action Card -->
+                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl shadow-md text-white p-6">
+                    <h3 class="font-bold text-lg mb-2">Want to manage a league?</h3>
+                    <p class="text-indigo-100 text-sm mb-4 leading-relaxed">
+                        Registering gives you power to create brackets, schedule automated fixtures, track team statistics, and share live tracking pages with your fans.
+                    </p>
+                    <a href="{% url 'register' %}" class="block text-center bg-white text-indigo-700 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-indigo-50 transition-colors shadow-sm">
+                        Get Started Free
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 mt-auto py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-400">
+            &copy; 2026 Kibaii Django Tournament Runner. Built for high performance tournament management.
+        </div>
+    </footer>
+
+</body>
+</html>
+

@@ -175,3 +175,8 @@ python manage.py simulate_tournament
 ---
 
 For questions or issues, open an issue on the [GitHub repository](https://github.com/Thorium234/kibaii_django-tournament-runner).
+## How to clone
+```bash
+git  clone Thorium234/kibaii_django-tournament-runner.git
+cd kibaii_django-tournament-runner/
+```

@@ -232,9 +232,10 @@ def manage_lineup(request, match_pk):
         starting_eleven_form = StartingElevenForm(initial={'players': list(current_starting_eleven)}, team=team)
         substitutes_form = SubstitutesForm(initial={'players': list(current_substitutes)}, team=team)
 
-    return render(request, 'league/manage_lineup.html', {
+    return render(request,   'league/manage_lineup.html', {
         'match': match,
         'team': team,
         'starting_eleven_form': starting_eleven_form,
         'substitutes_form': substitutes_form
     })
+ 
